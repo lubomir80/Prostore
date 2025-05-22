@@ -1,6 +1,5 @@
 import { ShoppingCart, UserIcon } from 'lucide-react'
 import Image from 'next/image'
-import Logo from "@/public/images/logo.svg"
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { APP_NAME } from '@/lib/constants'
@@ -15,7 +14,7 @@ function Header() {
             <div className="flex-start">
                <Link href="/" className='flex-start'>
                   <Image
-                     src={Logo}
+                     src="/images/logo.svg"
                      alt={`${APP_NAME} logo`}
                      height={48}
                      width={48}
