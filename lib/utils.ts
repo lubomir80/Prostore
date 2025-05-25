@@ -11,6 +11,6 @@ export function convertToPlainObject<T>(value: T): T {
 }
 export function formatNumberWithDecimal(num: number): string {
    const [int, dec] = num.toString().split(".")
-   return dec ? `${int}.${dec.padEnd(2, 0)}` : `${int}.00`
+   return dec ? `${int}.${dec.padEnd(2, "0")}` : `${int}.00`
 }
 
