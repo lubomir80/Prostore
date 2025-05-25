@@ -4,7 +4,7 @@ import ProductList from "@/components/shared/product/product-list";
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default async function Homepage() {
-   await delay(500)
+   await delay(1000)
 
    const latestProducts = await getLatestProduct()
 

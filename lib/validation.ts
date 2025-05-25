@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { formatNumberWithDecimal } from "./utils"
+import { Decimal } from "@prisma/client/runtime/library";
 
 const currency = z
    .string()
@@ -19,5 +20,6 @@ export const insertProductSchema = z.object({
    images: z.array(z.string()).min(1, "Product must have at least one image"),
    isFeatured: z.boolean(),
    banner: z.string().nullable(),
-   price: currency,
+   price: z.union([z.string(), z.number()]).transform(val => new Decimal(val)),
+   rating: z.union([z.string(), z.number()]).transform(val => new Decimal(val))
 })
