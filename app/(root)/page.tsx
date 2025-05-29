@@ -8,7 +8,6 @@ export default async function Homepage() {
 
    const latestProducts = await getLatestProduct()
 
-
    return (
       <div>
          <ProductList
