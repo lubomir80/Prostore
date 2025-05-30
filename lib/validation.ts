@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 import { Decimal } from "@prisma/client/runtime/library";
 // import { formatNumberWithDecimal } from "./utils"
 
@@ -23,3 +23,11 @@ export const insertProductSchema = z.object({
    price: z.union([z.string(), z.number()]).transform(val => new Decimal(val)),
    rating: z.union([z.string(), z.number()]).transform(val => new Decimal(val))
 })
+
+
+export const signInFormSchema = z.object({
+   email: z.string().email("Invalid email address"),
+   password: z.string().min(6, "Password must be at lease 6 characters")
+})
+
+export type TSignInFormSchema = z.infer<typeof signInFormSchema>
