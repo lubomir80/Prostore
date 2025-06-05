@@ -6,11 +6,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { signInCredentials } from "@/actions/user"
+import { useState, useTransition } from "react"
+
 
 
 
 
 function CredentialsSigninForm() {
+   const [isPending, startTransition] = useTransition()
+   const [message, setMessage] = useState<string | undefined>("")
+   const [success, setSuccess] = useState<boolean | undefined>(false)
 
    const form = useForm<TSignInFormSchema>({
       resolver: zodResolver(SignInFormSchema),
@@ -20,9 +26,26 @@ function CredentialsSigninForm() {
       }
    })
 
-   const onSubmit = (values: TSignInFormSchema) => {
-      console.log(values);
 
+   const onSubmit = (values: TSignInFormSchema) => {
+      setMessage("")
+      setSuccess(false)
+
+      startTransition(() => {
+         signInCredentials(values, values).then((data) => {
+            setSuccess(data?.success)
+            setMessage(data?.message)
+         })
+      })
+   }
+
+
+   const SignInButton = () => {
+      return (
+         <Button disabled={isPending} className="w-full" variant="default">
+            {isPending ? "Signing in..." : "Sign in"}
+         </Button>
+      )
    }
 
 
@@ -34,7 +57,7 @@ function CredentialsSigninForm() {
                <FormField
                   control={form.control}
                   name="email"
-                  render={({ field }) => (
+                  render={({ field: { onChange, ...fieldProps } }) => (
                      <FormItem>
                         <FormLabel htmlFor="email">Email</FormLabel>
                         <FormControl>
@@ -42,7 +65,12 @@ function CredentialsSigninForm() {
                               type="text"
                               autoComplete="email"
                               placeholder="Your email"
-                              {...field}
+                              {...fieldProps}
+                              onChange={(e) => {
+                                 if (message) setMessage("");
+                                 if (success) setSuccess(false);
+                                 onChange(e.target.value);
+                              }}
                            />
                         </FormControl>
                         <FormMessage />
@@ -53,7 +81,7 @@ function CredentialsSigninForm() {
                <FormField
                   control={form.control}
                   name="password"
-                  render={({ field }) => (
+                  render={({ field: { onChange, ...fieldProps } }) => (
                      <FormItem>
                         <FormLabel htmlFor="email">Email</FormLabel>
                         <FormControl>
@@ -61,7 +89,12 @@ function CredentialsSigninForm() {
                               type="password"
                               autoComplete="password"
                               placeholder="*********"
-                              {...field}
+                              {...fieldProps}
+                              onChange={(e) => {
+                                 if (message) setMessage("");
+                                 if (success) setSuccess(false);
+                                 onChange(e.target.value);
+                              }}
                            />
                         </FormControl>
                         <FormMessage />
@@ -70,12 +103,21 @@ function CredentialsSigninForm() {
                />
             </div>
             <div>
-               <Button
-                  className="w-full"
-                  variant="default">
-                  Sign in
-               </Button>
+               <SignInButton />
             </div>
+
+            {message && !success && (
+               <div className="text-center text-destructive">
+                  {message}
+               </div>
+            )}
+
+            {message && success && (
+               <div className="text-center text-green-600">
+                  {message}
+               </div>
+            )}
+
             <div className="text-sm text-center text-muted-foreground">
                Don&apos;t have an account?{" "}
                <Link href="/sign-uo" target="_self" className="link ">
