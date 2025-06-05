@@ -11,6 +11,8 @@ import {
 } from "@/schema"
 import { hashSync } from "bcrypt-ts"
 import { prisma } from "@/db/prisma"
+import { formatError } from "@/lib/utils"
+
 
 
 
@@ -101,7 +103,13 @@ export async function signUpUser(prevState: unknown, data: TSignUpFormSchema) {
       if (isRedirectError(error)) {
          throw error
       }
-      return { success: false, message: "User was not registered!" }
+      const result = await formatError(error)
+
+      if (typeof result === "string") {
+         return { success: false, message: result }
+      } else {
+         return { success: false, message: "User was not registered!" }
+      }
    }
 }
 
