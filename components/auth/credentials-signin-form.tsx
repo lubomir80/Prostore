@@ -8,6 +8,7 @@ import { Button } from "../ui/button"
 import Link from "next/link"
 import { signInCredentials } from "@/actions/user"
 import { useState, useTransition } from "react"
+// import { useSearchParams } from "next/navigation"
 
 
 
@@ -17,6 +18,10 @@ function CredentialsSigninForm() {
    const [isPending, startTransition] = useTransition()
    const [message, setMessage] = useState<string | undefined>("")
    const [success, setSuccess] = useState<boolean | undefined>(false)
+   // const searParams = useSearchParams()
+   // const callbackUrl = searParams.get("callbackUrl") || "/"
+
+
 
    const form = useForm<TSignInFormSchema>({
       resolver: zodResolver(SignInFormSchema),
