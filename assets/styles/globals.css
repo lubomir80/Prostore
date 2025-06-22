@@ -136,4 +136,16 @@
   body {
     @apply bg-background text-foreground;
   }
+
+   .toast-error {
+      border-color: rgb(219, 45, 45) !important;
+   }
+
+   .toast-error svg{
+      fill: rgb(219, 45, 45) !important;
+   }
+
+   .toast-success svg{
+      fill: rgb(24, 161, 70) !important;
+   }
 }

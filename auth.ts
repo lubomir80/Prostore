@@ -2,6 +2,8 @@ import NextAuth from "next-auth"
 import authConfig from "./auth.config"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/db/prisma"
+import { cookies } from "next/headers"
+import { NextResponse } from "next/server"
 
 
 
@@ -34,6 +36,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
          }
          return token
+      },
+      authorized({ request, auth }: any) {
+         // check for session cart cookie
+         if (!request.cookies.get("sessionCardId")) {
+            // Generate new session cart id cookie
+            const sessionCardId = crypto.randomUUID()
+
+            //Clone the req headers
+            const newRequestHeaders = new Headers(request.headers)
+
+            const response = NextResponse.next({
+               request: {
+                  headers: newRequestHeaders
+               }
+            });
+
+            //Set newly generated sessionCardId in the response cookies
+
+            response.cookies.set("sessionCardId", sessionCardId)
+
+            return response
+         } else {
+            return true
+         }
       }
    },
    adapter: PrismaAdapter(prisma),
