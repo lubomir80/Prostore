@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import ProductPrice from "@/components/shared/product/product-price"
 import ProductImages from "@/components/shared/product/product-images"
 import AddToCart from "@/components/shared/product/add-to-cart"
+import { getMyCart } from "@/actions/cart"
 
 
 
@@ -17,6 +18,8 @@ async function ProductDetailsPage(props: {
    const product = await getProductBySlug(slug)
 
    if (!product) notFound()
+
+   const cart = await getMyCart()
 
 
    return (
@@ -68,14 +71,16 @@ async function ProductDetailsPage(props: {
                         </div>
                         {product.stock > 0 && (
                            <div className="flex-center">
-                              <AddToCart item={{
-                                 productId: product.id,
-                                 name: product.name,
-                                 slug: product.slug,
-                                 price: product.price.toNumber(),
-                                 qty: 1,
-                                 image: product.images![0],
-                              }}
+                              <AddToCart
+                                 cart={cart}
+                                 item={{
+                                    productId: product.id,
+                                    name: product.name,
+                                    slug: product.slug,
+                                    price: product.price.toNumber(),
+                                    qty: 1,
+                                    image: product.images![0],
+                                 }}
                               />
                            </div>
                         )}
