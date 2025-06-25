@@ -1,12 +1,12 @@
 "use client"
-// import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { addItemToCart, removeItemFromCart } from "@/actions/cart"
 import { Cart } from "@/types"
 import { toast } from "sonner"
-import { Loader, Minus, Plus } from "lucide-react"
+import { Loader, Minus, Plus, ArrowRight } from "lucide-react"
 import {
    Table,
    TableBody,
@@ -15,10 +15,13 @@ import {
    TableHeader,
    TableRow,
 } from "@/components/ui/table"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/utils"
+
 
 function CartTable({ cart }: { cart?: Cart }) {
-   // const router = useRouter()
+   const router = useRouter()
    const [isPending, startTransition] = useTransition()
 
 
@@ -97,6 +100,24 @@ function CartTable({ cart }: { cart?: Cart }) {
                      </TableBody>
                   </Table>
                </div>
+               <Card>
+                  <CardContent className="p-4 gap-4">
+                     <div className="pb-3 text-xl flex flex-col items-center">
+                        Subtotal ({cart.items.reduce((acc, qty) => acc + qty.qty, 0)})
+                        <span className="font-bold">
+                           {formatCurrency(cart.itemsPrice)}
+                        </span>
+                     </div>
+                     <Button
+                        className="w-full"
+                        disabled={isPending}
+                        onClick={() => startTransition(() => router.push("/shipping-address"))}>
+                        {isPending ?
+                           (<Loader className="w-4 h-4 animate-spin" />) :
+                           (<ArrowRight className="w-4 h-4" />)} Proceed to Checkout
+                     </Button>
+                  </CardContent>
+               </Card>
             </div>
          )}
       </>
