@@ -2,9 +2,10 @@ import { auth } from "@/auth"
 import { getMyCart } from "@/actions/cart"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
+import { getUserById } from "@/actions/user"
 import ShippingAddressForm from "./shipping-address-form"
-// import { TShippingAddressSchema } from "@/schema/index"
-// import { getUserById } from "@/actions/user"
+import { TShippingAddressSchema } from "@/schema/index"
+import CheckoutSteps from "@/components/shared/checkout-steps"
 
 
 export const metadata: Metadata = {
@@ -23,7 +24,8 @@ async function ShippingAddressPage() {
 
    if (!userId) throw new Error("No user ID")
 
-   // const user = getUserById(userId)
+   const user = getUserById(userId)
+   const userAddress = (await user).address
 
    const defaultValues = {
       fullName: "",
@@ -35,9 +37,12 @@ async function ShippingAddressPage() {
       lng: undefined,
    }
 
+
    return (
       <>
-         <ShippingAddressForm address={defaultValues} />
+         <CheckoutSteps current={1} />
+         <ShippingAddressForm
+            address={userAddress as TShippingAddressSchema || defaultValues} />
       </>
    )
 }

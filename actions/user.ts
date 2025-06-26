@@ -1,13 +1,15 @@
 "use server"
 
 import { isRedirectError } from "next/dist/client/components/redirect-error"
-import { signIn, signOut } from "@/auth"
+import { auth, signIn, signOut } from "@/auth"
 import { getUserByEmail } from "@/data/user"
 import {
    SignInFormSchema,
    TSignInFormSchema,
    SignUpFormSchema,
-   TSignUpFormSchema
+   TSignUpFormSchema,
+   TShippingAddressSchema,
+   shippingAddressSchema
 } from "@/schema"
 import { hashSync } from "bcrypt-ts"
 import { prisma } from "@/db/prisma"
@@ -123,4 +125,25 @@ export async function getUserById(userId: string) {
    return user
 }
 
+export async function updateUserAddress(data: TShippingAddressSchema) {
+   try {
+      const session = await auth()
 
+      const currentUser = await prisma.user.findFirst({
+         where: { id: session?.user?.id }
+      })
+
+      if (!currentUser) throw new Error("User doesn't exist!")
+
+      const address = shippingAddressSchema.parse(data)
+
+      await prisma.user.update({
+         where: { id: currentUser.id },
+         data: { address }
+      })
+
+      return { success: true, message: "User updated successfully" }
+   } catch (error) {
+      return { success: false, message: formatError(error) }
+   }
+}

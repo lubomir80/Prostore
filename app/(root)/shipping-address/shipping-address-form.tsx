@@ -3,16 +3,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { shippingAddressSchema, TShippingAddressSchema } from "@/schema"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-// import Link from "next/link"
-// import { toast } from "sonner"
-// import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { useState, useTransition } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Loader } from "lucide-react"
+import { updateUserAddress } from "@/actions/user"
+import { useRouter } from "next/navigation"
+// import Link from "next/link"
+
+
 
 function ShippingAddressForm({ address }: { address: TShippingAddressSchema }) {
-   // const router = useRouter()
+   const router = useRouter()
    const [isPending, startTransition] = useTransition()
    const [message, setMessage] = useState<string | undefined>("")
    const [success, setSuccess] = useState<boolean | undefined>(false)
@@ -26,13 +29,17 @@ function ShippingAddressForm({ address }: { address: TShippingAddressSchema }) {
    const onSubmit = (values: TShippingAddressSchema) => {
       setMessage("")
       setSuccess(false)
-      console.log(values);
 
-      startTransition(() => {
-         // signInCredentials(values, values).then((data) => {
-         //    setSuccess(data?.success)
-         //    setMessage(data?.message)
-         // })
+      startTransition(async () => {
+         const res = await updateUserAddress(values)
+
+         if (!res.success) {
+            toast.error(res.message, {
+               className: "toast-error"
+            })
+         }
+
+         router.push("/payment-method")
       })
    }
 
