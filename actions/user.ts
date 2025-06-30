@@ -9,7 +9,9 @@ import {
    SignUpFormSchema,
    TSignUpFormSchema,
    TShippingAddressSchema,
-   shippingAddressSchema
+   shippingAddressSchema,
+   TPaymentMethodsSchema,
+   paymentMethodsSchema
 } from "@/schema"
 import { hashSync } from "bcrypt-ts"
 import { prisma } from "@/db/prisma"
@@ -143,6 +145,35 @@ export async function updateUserAddress(data: TShippingAddressSchema) {
       })
 
       return { success: true, message: "User updated successfully" }
+   } catch (error) {
+      return { success: false, message: formatError(error) }
+   }
+}
+
+
+
+
+// Update user s payment method
+
+
+export async function updateUserPaymentMethod(data: TPaymentMethodsSchema) {
+   try {
+      const session = await auth()
+      const currentUser = await prisma.user.findFirst({
+         where: { id: session?.user?.id }
+      })
+
+      if (!currentUser) throw new Error("User doesn't exist!")
+
+      const paymentMethod = paymentMethodsSchema.parse(data)
+
+      await prisma.user.update({
+         where: { id: currentUser.id },
+         data: { paymentMethod: paymentMethod.type }
+      })
+
+      return { success: true, message: "User updated successfully" }
+
    } catch (error) {
       return { success: false, message: formatError(error) }
    }

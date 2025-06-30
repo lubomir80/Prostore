@@ -1,3 +1,4 @@
+import { PAYMENT_METHODS } from "@/lib/constants"
 import * as z from "zod"
 
 
@@ -62,3 +63,13 @@ export const shippingAddressSchema = z.object({
 })
 
 export type TShippingAddressSchema = z.infer<typeof shippingAddressSchema>
+
+
+export const paymentMethodsSchema = z.object({
+   type: z.string().min(1, "Payment method is required")
+}).refine((data) => PAYMENT_METHODS.includes(data.type), {
+   path: ["type"],
+   message: "Invalid payment method"
+})
+
+export type TPaymentMethodsSchema = z.infer<typeof paymentMethodsSchema>
